@@ -11,18 +11,22 @@ d3.json("https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
   //get fastest time
   var fastest = data[0].Seconds
   
-  var w = 800;
+  var w = 700;
   var h = 600;
   var padding = {
-    top: 40,
-    bottom: 40,
+    top: 20,
+    bottom: 45,
     left: 40,
-    right: 90
+    right: 100
   };
   
   var svg = d3.select("#chart")
     .attr("width", w)
     .attr("height", h);
+  
+  var div = d3.select("body").append("div")	
+    .attr("class", "tooltip")				
+    .style("opacity", 0);
   
   var yScale = d3.scaleLinear()
     .domain([d3.min(riders, function(d) {
@@ -70,6 +74,31 @@ svg.selectAll("circle")
       } else {
         return "black";
       }
+    })
+    .on("mouseover", function(d, i) {
+      div.transition()		
+        .duration(0)		
+        .style("opacity", 1);	
+      div.html("<p><strong>" + 
+          d.Name +
+          " : " +
+          d.Nationality +
+          "</strong><br>Year: " +
+          d.Year +
+          "<br>Time : " +
+          d.Time +
+          "<br>Ranking : " +
+          d.Place +
+          "</p><p>" +
+          d.Doping     
+        )
+        .style("left", (d3.event.pageX + 5) + "px")
+        .style("top", (d3.event.pageY - 80) + "px")
+    })
+    .on("mouseout", function(d) {		
+      div.transition()		
+        .duration(500)		
+        .style("opacity", 0);	
     });
   
   //using forEach as enter() is not working on all data?
@@ -83,8 +112,7 @@ svg.selectAll("circle")
     .attr("y", function(){
       return yScale(item.Place);
     })
-    .attr("font-family", "sans-serif")
-    .attr("font-size", "11px")
+    .attr("class", "labelsmall")
     .attr("transform", "translate(10,3)")
   })
 
@@ -124,9 +152,41 @@ svg.selectAll("circle")
     .text("Seconds behind fastest time")
     .attr("class", "label")
     .attr("transform", "translate(" +
-          ((w / 2) - padding.left) +
+          ((w / 2) - (padding.left + padding.right)) +
           "," +
-          ((h - padding.bottom) - (padding.bottom / 2)) +
+          (h - 5) +
           ")"
          );
+  
+  //key
+  svg.append("circle")
+    .attr("cx", w - (padding.right * 2))
+    .attr("cy", h / 2)
+    .attr("r", 5)
+    .attr("fill", "red");
+  svg.append("circle")
+    .attr("cx", w - (padding.right * 2))
+    .attr("cy", (h/2) + 20)
+    .attr("r", 5)
+    .attr("fill", "black");
+  //add text
+  svg.append("text")
+    .text("Riders with doping allegations")
+    .attr("class", "labelsmall")
+    .attr("transform", "translate(" +
+            (w - (padding.right * 2) + 10) +
+            "," +
+            ((h / 2) + 4) +
+            ")"
+         );
+  svg.append("text")
+    .text("Riders without doping allegations")
+    .attr("class", "labelsmall")
+    .attr("transform", "translate(" +
+            (w - (padding.right * 2) + 10) +
+            "," +
+            ((h / 2) + 24) +
+            ")"
+         );
+  
 });
