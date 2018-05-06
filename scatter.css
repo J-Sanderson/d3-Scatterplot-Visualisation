@@ -45,7 +45,7 @@ h1, h2 {
   font-size: 11px;
 }
 
-div.tooltip {	
+.d3-tip {	
   position: absolute;			
   text-align: center;				
   padding: 5px;					
@@ -58,7 +58,7 @@ div.tooltip {
   box-shadow: 3px 3px 5px var(--dark);
 }
 
-div.tooltip p {
+.d3-tip p {
   margin: 5px
 }
 
