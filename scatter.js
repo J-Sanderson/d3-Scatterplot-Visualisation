@@ -24,10 +24,6 @@ d3.json("https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
     .attr("width", w)
     .attr("height", h);
   
-  var div = d3.select("body").append("div")	
-    .attr("class", "tooltip")				
-    .style("opacity", 0);
-  
   var yScale = d3.scaleLinear()
     .domain([d3.min(riders, function(d) {
       return d[1];
@@ -57,6 +53,23 @@ d3.json("https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
     .attr("transform", "translate(0," + (h - padding.bottom) + ")")
     .call(xAxis)
   
+  var tip = d3.tip().attr("class", "d3-tip").html(function(d){
+      var label = "<p><strong>" + 
+          d.Name +
+          " : " +
+          d.Nationality +
+          "</strong><br>Year: " +
+          d.Year +
+          "<br>Time : " +
+          d.Time +
+          "<br>Ranking : " +
+          d.Place +
+          "</p><p>" +
+          d.Doping
+      return label;
+    }).direction("ne")
+svg.call(tip);
+  
 svg.selectAll("circle")
     .data(data)
     .enter()
@@ -75,31 +88,8 @@ svg.selectAll("circle")
         return "black";
       }
     })
-    .on("mouseover", function(d, i) {
-      div.transition()		
-        .duration(0)		
-        .style("opacity", 1);	
-      div.html("<p><strong>" + 
-          d.Name +
-          " : " +
-          d.Nationality +
-          "</strong><br>Year: " +
-          d.Year +
-          "<br>Time : " +
-          d.Time +
-          "<br>Ranking : " +
-          d.Place +
-          "</p><p>" +
-          d.Doping     
-        )
-        .style("left", (d3.event.pageX + 5) + "px")
-        .style("top", (d3.event.pageY - 80) + "px")
-    })
-    .on("mouseout", function(d) {		
-      div.transition()		
-        .duration(500)		
-        .style("opacity", 0);	
-    });
+    .on('mouseover', tip.show)
+    .on('mouseout', tip.hide);
   
   //using forEach as enter() is not working on all data?
   //(see enter() function below)
